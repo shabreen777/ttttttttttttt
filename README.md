@@ -249,3 +249,172 @@ public class Main {
 01919191945,Raj,Chennai,120
 0191919194,Sam,Chennai,250
 0191919195,Anya,Chennai,34
+Beans.xml--------------------------
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:p="http://www.springframework.org/schema/p"
+xmlns:aop="http://www.springframework.org/schema/aop"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:jee="http://www.springframework.org/schema/jee"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:task="http://www.springframework.org/schema/task"
+xsi:schemaLocation="http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-3.2.xsd
+http://www.springframework.org/schema/jee
+http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/springtx-3.2.xsd http://www.springframework.org/schema/task
+http://www.springframework.org/schema/task/spring-task-3.2.xsd">
+<context:property-placeholder location="classpath:charges.properties" />
+<bean name="courier" class="com.spring.model.Courier">
+<property name="chargePerKg" value="${chargePerKg}" />
+<property name="serviceCharge">
+<bean class="com.spring.model.ServiceChargeInfo">
+<property name="locationServiceCharge">
+<map>
+<entry key="Coimbatore" value="200.0" />
+<entry key="Chennai" value="300.0" />
+<entry key="Madurai" value="150.0" />
+</map>
+</property>
+</bean>
+</property>
+</bean>
+<bean id="courierBoObj" class="com.spring.bo.CourierBO" />
+<bean name="courierService" class="com.spring.service.CourierService">
+<property name="cBoObj" ref="courierBoObj"/>
+</bean>
+</beans>
+Class courierService---------------
+package com.spring.service;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import com.spring.bo.CourierBO;
+import com.spring.exception.InvalidParcelWeightException;
+import com.spring.model.Courier;
+public class CourierService {
+private CourierBO cBoObj;
+public CourierBO getcBoObj() {
+return cBoObj;
+}
+public void setcBoObj(CourierBO cBoObj) {
+this.cBoObj = cBoObj;
+}
+public double calculateCourierCharge(int courierId,int weight,String city) throws
+InvalidParcelWeightException {
+double courierCharge=0.0;
+//fill your code
+if(weight > 0 && weight < 1000){
+ApplicationContext context = new
+FileSystemXmlApplicationContext("src/main/resources/beans.xml");
+Courier courier = context.getBean("courier", Courier.class);
+courier.setCourierId(courierId);
+courier.setWeight(weight);
+courierCharge = cBoObj.calculateCourierCharge(courier, city);
+}else{
+throw new InvalidParcelWeightException("Invalid Parcel Weight");
+}
+return courierCharge;
+}
+}
+Class serviceCharge--------------------------
+package com.spring.model;
+import java.util.Map;
+public class ServiceChargeInfo {
+private Map<String,Float> locationServiceCharge;
+public Map<String, Float> getLocationServiceCharge() {
+return locationServiceCharge;
+}
+public void setLocationServiceCharge(Map<String, Float> locationServiceCharge) {
+this.locationServiceCharge = locationServiceCharge;
+}
+}
+Class courier------------------
+package com.spring.model;
+public class Courier {
+private int courierId;
+private int weight;
+private float chargePerKg;
+private ServiceChargeInfo serviceCharge;
+public ServiceChargeInfo getServiceCharge() {
+return serviceCharge;
+}
+public void setServiceCharge(ServiceChargeInfo serviceCharge) {
+this.serviceCharge = serviceCharge;
+}
+public int getCourierId() {
+return courierId;
+}
+public void setCourierId(int courierId) {
+this.courierId = courierId;
+}
+public int getWeight() {
+return weight;
+}
+public void setWeight(int weight) {
+this.weight = weight;
+}
+public float getChargePerKg() {
+return chargePerKg;
+}
+public void setChargePerKg(float chargePerKg) {
+this.chargePerKg = chargePerKg;
+}
+}
+Class driver----------------------------------
+package com.spring.main;
+import java.util.Scanner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import com.spring.exception.InvalidParcelWeightException;
+import com.spring.service.CourierService;
+public class Driver {
+public static void main(String[] args) throws InvalidParcelWeightException {
+
+//fill the code
+Scanner sc = new Scanner(System.in);
+ApplicationContext context = new
+FileSystemXmlApplicationContext("src/main/resources/beans.xml");
+CourierService service = context.getBean("courierService", CourierService.class );
+int courierId = 0;
+int weight = 0;
+String cityName = "";
+double courierCharge=0.0;
+System.out.println("Enter the courier ID:");
+courierId = sc.nextInt();
+System.out.println("Enter the total weight of parcel:");
+weight = sc.nextInt();
+sc.nextLine();
+System.out.println("Enter the city:");
+cityName = sc.nextLine();
+courierCharge = service.calculateCourierCharge(courierId, weight, cityName);
+System.out.println("Total Courier Charge: "+courierCharge);
+}
+}
+Exception class--------------------------
+package com.spring.exception;
+public class InvalidParcelWeightException extends Exception {
+public InvalidParcelWeightException(String msg) {
+super(msg);
+}
+}
+Class courierBo--------------
+package com.spring.bo;
+import java.util.Map;
+import com.spring.model.Courier;
+public class CourierBO {
+public double calculateCourierCharge(Courier cObj, String city) {
+double courierCharge = 0.0;
+Map<String, Float> map = cObj.getServiceCharge().getLocationServiceCharge();
+// fill the code
+courierCharge = cObj.getWeight() * cObj.getChargePerKg();
+if (map.containsKey(city)) {
+courierCharge = courierCharge +
+cObj.getServiceCharge().getLocationServiceCharge().get(city);
+}
+return courierCharge;
+}
+}
