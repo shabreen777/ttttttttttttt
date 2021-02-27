@@ -420,3 +420,18 @@ return courierCharge;
 }
 https://onlinegdb.com/r1-4TEgfu
 https://www.englishforums.com/English/LetAnswersCorrect/qlnnk/post.htm
+What?                                                                                                                      
+A scam is a used to cheat someone out of something, especially 
+ scams can affect the economy 
+of the nation as a whole and also damage the world economy.
+                                                                             SCAM IN 
+                                                                       INDIAN ECONOMY
+When?
+India has been home to several scams post 1992, resulting to losses 
+amounting to lakhs of crores of rupees to the economy
+1)In 2016,  Vijay Mallya – Rs. 9000 Crore
+2)In 2004, Coalgate Scam – Rs. 1.86 lakh crore
+3)In 2012, 2G Spectrum scam – Rs. 1,76,000 crore
+4)In 2010, Commonwealth Games scam – Rs. 70,000 crore
+![Uploading image.png…]()
+
